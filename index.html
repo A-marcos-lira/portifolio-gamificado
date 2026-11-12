@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Portfólio Gamificado 2D — Versão 2.0</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Canvas do Jogo Phaser -->
+  <div id="game-container"></div>
+
+  <!-- Barra Superior: Áudio, Dicas e Indicador de Progresso -->
+  <header class="top-bar">
+    <!-- Controle de Áudio (Canto Superior Esquerdo) -->
+    <div id="audio-control-container" class="audio-control-container">
+      <button id="audio-toggle-btn" class="audio-toggle-btn" aria-label="Controle de Áudio" title="Configurar áudio">
+        <span class="audio-icon" id="audio-icon">🔊</span>
+        <span class="audio-btn-label">SOM</span>
+      </button>
+
+      <div id="audio-panel" class="audio-panel hidden" role="dialog" aria-label="Painel de Áudio">
+        <div class="audio-panel-header">
+          <span class="audio-panel-title">ÁUDIO</span>
+          <button id="audio-panel-close" class="audio-panel-close-btn" aria-label="Fechar painel de áudio">✕</button>
+        </div>
+
+        <div class="audio-setting-row">
+          <div class="audio-setting-label">
+            <span>Música</span>
+            <span id="music-vol-val" class="vol-percent">25%</span>
+          </div>
+          <input type="range" id="music-volume" class="retro-slider" min="0" max="100" value="25" />
+        </div>
+
+        <div class="audio-setting-row">
+          <div class="audio-setting-label">
+            <span>Efeitos</span>
+            <span id="sfx-vol-val" class="vol-percent">40%</span>
+          </div>
+          <input type="range" id="sfx-volume" class="retro-slider" min="0" max="100" value="40" />
+        </div>
+
+        <div class="audio-setting-divider"></div>
+
+        <label class="audio-mute-toggle" for="mute-all-checkbox">
+          <input type="checkbox" id="mute-all-checkbox" class="retro-checkbox" />
+          <span class="checkbox-custom"></span>
+          <span class="mute-label-text">Silenciar tudo</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- Dica de teclado para desktop -->
+    <div id="desktop-hints" class="desktop-hints">
+      <span>[A/D/Setas] Mover</span>
+      <span>[Shift] Correr</span>
+      <span>[Espaço] Pular</span>
+      <span>[S/↓] Entrar no Cano</span>
+    </div>
+
+    <!-- Indicador de Progresso (Canto Superior Direito) -->
+    <div id="progress-indicator" class="progress-badge">
+      <span class="progress-icon">🚩</span>
+      <span class="progress-text">Seções visitadas:</span>
+      <strong id="progress-count" class="progress-count">0/4</strong>
+    </div>
+  </header>
+
+  <!-- Controles Virtuais Touch para Celulares/Tablets -->
+  <div id="virtual-controls" class="virtual-controls hidden">
+    <div class="dpad-cluster">
+      <button id="btn-left" class="v-btn" aria-label="Mover para esquerda">◀</button>
+      <button id="btn-down" class="v-btn" aria-label="Entrar no cano / Agachar">▼</button>
+      <button id="btn-right" class="v-btn" aria-label="Mover para direita">▶</button>
+    </div>
+    <div class="action-cluster">
+      <button id="btn-run" class="v-btn action-btn run-btn" aria-label="Correr">RUN</button>
+      <button id="btn-jump" class="v-btn action-btn jump-btn" aria-label="Pular">PULO</button>
+    </div>
+  </div>
+
+  <!-- Modal / Telas das Seções (HTML/CSS) -->
+  <div id="about-modal" class="modal-backdrop hidden" aria-hidden="true" role="dialog">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="pixel-indicator"></div>
+        <h2 id="modal-title" class="modal-title">SOBRE MIM</h2>
+        <button id="modal-close-btn" class="close-x" aria-label="Fechar">✕</button>
+      </div>
+
+      <div id="modal-body" class="modal-body">
+        <!-- O conteúdo é injetado dinamicamente via SectionModal.js -->
+      </div>
+
+      <div class="modal-footer">
+        <button id="back-to-game-btn" class="retro-btn">
+          <span class="btn-arrow">◄</span> Voltar ao Mapa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
