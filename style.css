@@ -279,13 +279,11 @@ html, body {
   font-weight: bold;
 }
 
-/* Instruções de Controle */
+/* Instruções de Controle (Responsivas Desktop e Mobile) */
 .desktop-hints {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
-  gap: 14px;
   background: rgba(18, 20, 29, 0.85);
   border: 2px solid #3b82f6;
   border-radius: 6px;
@@ -299,12 +297,65 @@ html, body {
   user-select: none;
   margin: 0 auto;
   box-sizing: border-box;
+  text-align: center;
 }
 
 .desktop-hints span {
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
+}
+
+/* Modos Desktop e Mobile */
+.hints-desktop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.hints-mobile {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+}
+
+.hint-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.hint-sep {
+  color: #60a5fa;
+  opacity: 0.6;
+  margin: 0 2px;
+  user-select: none;
+}
+
+/* Quando os controles virtuais estão ativos (classe .mobile-hints) */
+.desktop-hints.mobile-hints .hints-desktop {
+  display: none !important;
+}
+
+.desktop-hints.mobile-hints .hints-mobile {
+  display: flex !important;
+}
+
+/* Fallback CSS em dispositivos touch nativos */
+@media (hover: none) and (pointer: coarse) {
+  .hints-desktop {
+    display: none;
+  }
+  .hints-mobile {
+    display: flex;
+  }
 }
 
 /* Responsividade do HUD (Evita Sobreposição e Textos Cortados) */
@@ -381,9 +432,8 @@ html, body {
   }
 
   .desktop-hints {
-    font-size: 8.5px;
+    font-size: 8px;
     padding: 5px 10px;
-    gap: 6px 10px;
     max-width: calc(100vw - 20px);
   }
 }
@@ -430,8 +480,11 @@ html, body {
   .desktop-hints {
     font-size: 7.5px;
     padding: 4px 8px;
-    gap: 4px 6px;
     max-width: calc(100vw - 16px);
+  }
+
+  .hint-line {
+    gap: 5px;
   }
 }
 
@@ -445,9 +498,12 @@ html, body {
   }
 
   .desktop-hints {
-    font-size: 7px;
-    padding: 4px 6px;
-    gap: 3px 5px;
+    font-size: 6.8px;
+    padding: 3px 6px;
+  }
+
+  .hint-line {
+    gap: 3px;
   }
 }
 

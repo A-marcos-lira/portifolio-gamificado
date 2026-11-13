@@ -9,6 +9,7 @@ export class VirtualControls {
   constructor(player) {
     this.player = player;
     this.container = document.getElementById('virtual-controls');
+    this.hintsContainer = document.getElementById('desktop-hints');
     this.btnLeft = document.getElementById('btn-left');
     this.btnRight = document.getElementById('btn-right');
     this.btnDown = document.getElementById('btn-down');
@@ -28,6 +29,9 @@ export class VirtualControls {
     this.bindEvents();
 
     window.addEventListener('resize', () => this.checkVisibility());
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => this.checkVisibility(), 100);
+    });
     window.addEventListener('blur', () => this.reset());
   }
 
@@ -35,11 +39,31 @@ export class VirtualControls {
     // Exibe controles virtuais em telas touch ou com largura inferior a 1024px
     const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     const isSmallScreen = window.innerWidth <= 1024;
+    const isMobileMode = isTouchDevice || isSmallScreen;
 
-    if (isTouchDevice || isSmallScreen) {
+    if (isMobileMode) {
       this.container.classList.remove('hidden');
     } else {
       this.container.classList.add('hidden');
+    }
+
+    // Sincroniza dinamicamente as instruções do HUD com o modo atual
+    this.updateHints(isMobileMode);
+  }
+
+  /**
+   * Alterna as instruções do HUD entre Desktop (teclado) e Mobile (toque/botões)
+   */
+  updateHints(isMobileMode) {
+    if (!this.hintsContainer) {
+      this.hintsContainer = document.getElementById('desktop-hints');
+    }
+    if (!this.hintsContainer) return;
+
+    if (isMobileMode) {
+      this.hintsContainer.classList.add('mobile-hints');
+    } else {
+      this.hintsContainer.classList.remove('mobile-hints');
     }
   }
 

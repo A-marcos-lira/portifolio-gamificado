@@ -54,12 +54,32 @@
       </div>
     </div>
 
-    <!-- Dica de teclado para desktop -->
-    <div id="desktop-hints" class="desktop-hints">
-      <span>[A/D/Setas] Mover</span>
-      <span>[Shift] Correr</span>
-      <span>[Espaço] Pular</span>
-      <span>[S/↓] Entrar no Cano</span>
+    <!-- Instruções de Controle Responsivas (Desktop e Mobile) -->
+    <div id="desktop-hints" class="desktop-hints" aria-label="Instruções de controle">
+      <!-- Versão Desktop (Teclado) -->
+      <div class="hints-desktop">
+        <span>[A/D/Setas] Mover</span>
+        <span class="hint-sep">|</span>
+        <span>[Shift] Correr</span>
+        <span class="hint-sep">|</span>
+        <span>[Espaço] Pular</span>
+        <span class="hint-sep">|</span>
+        <span>[S/↓] Entrar no cano</span>
+      </div>
+
+      <!-- Versão Mobile (Controles Virtuais Touch) -->
+      <div class="hints-mobile">
+        <div class="hint-line">
+          <span>← → Mover</span>
+          <span class="hint-sep">|</span>
+          <span>Toque duplo: Correr</span>
+        </div>
+        <div class="hint-line">
+          <span>PULO: Pular</span>
+          <span class="hint-sep">|</span>
+          <span>↓ Entrar no cano</span>
+        </div>
+      </div>
     </div>
 
     <!-- Indicador de Progresso (Canto Superior Direito) -->
