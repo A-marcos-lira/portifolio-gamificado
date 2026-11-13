@@ -287,6 +287,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.body.setVelocity(0, 0);
     this.body.setAcceleration(0, 0);
     this.body.setAllowGravity(false);
+    if (this.virtualInput) {
+      this.virtualInput.left = false;
+      this.virtualInput.right = false;
+      this.virtualInput.down = false;
+      this.virtualInput.jump = false;
+      this.virtualInput.run = false;
+      this.virtualInput.justJump = false;
+    }
   }
 
   /**
@@ -296,6 +304,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.controlsLocked = false;
     this.body.setAllowGravity(true);
     this.body.setGravityY(this.BASE_GRAVITY);
+    if (this.virtualInput) {
+      this.virtualInput.left = false;
+      this.virtualInput.right = false;
+      this.virtualInput.down = false;
+      this.virtualInput.jump = false;
+      this.virtualInput.run = false;
+      this.virtualInput.justJump = false;
+    }
     this.anims.play('player_idle', true);
   }
 }

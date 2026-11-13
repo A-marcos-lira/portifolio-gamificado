@@ -28,3 +28,7 @@ Thumbs.db
 *.tmp
 *.temp
 
+# Arquivos de áudio de origem (já organizados em public/assets/audio/)
+music/
+
+

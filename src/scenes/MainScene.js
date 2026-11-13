@@ -22,8 +22,10 @@ export class MainScene extends Phaser.Scene {
 
   create() {
     // Dimensões Ampliadas do Mundo do Jogo (Exploração Livre de 4800px)
-    const worldWidth = 4800;
-    const worldHeight = 480;
+    this.worldWidth = 4800;
+    this.worldHeight = 480;
+    const worldWidth = this.worldWidth;
+    const worldHeight = this.worldHeight;
 
     // Configura os limites físicos do mundo
     this.physics.world.setBounds(0, 0, worldWidth, worldHeight);
@@ -72,18 +74,32 @@ export class MainScene extends Phaser.Scene {
       this.physics.add.collider(this.player, pipe.sprite);
     });
 
-    // 6. CÂMERA SUAVE ACOMPANHANDO O JOGADOR
+    // 6. CÂMERA SUAVE ACOMPANHANDO O JOGADOR COM ZOOM RESPONSIVO
     this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
     this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
 
-    // Adaptação dos limites de câmera em caso de redimensionamento de janela
+    // Configuração inicial do zoom e enquadramento responsivo
+    this.updateCameraResponsive();
+
+    // Adaptação dinâmica de câmera e limites em caso de redimensionamento ou rotação da tela
     this.scale.on('resize', () => {
-      this.cameras.main.setBounds(0, 0, worldWidth, worldHeight);
+      this.updateCameraResponsive();
+    });
+
+    window.addEventListener('resize', () => {
+      this.updateCameraResponsive();
+    });
+
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => this.updateCameraResponsive(), 100);
     });
 
     // 7. GERENCIADOR DE TELAS MODAIS DAS 4 SEÇÕES
     this.sectionModal = new SectionModal((sectionId, isFirstCompletion) => {
       // Callback quando o usuário clica em "Voltar ao mapa"
+      if (this.virtualControls) {
+        this.virtualControls.reset();
+      }
       const activePipe = this.currentActivePipe || this.pipes.find(p => p.id === sectionId) || this.pipes[0];
       activePipe.startExitAnimation(this.player);
 
@@ -117,6 +133,9 @@ export class MainScene extends Phaser.Scene {
    * Entrada na tubulação: abre a seção correspondente sem registrar conclusão imediata
    */
   handlePipeEntered(pipe) {
+    if (this.virtualControls) {
+      this.virtualControls.reset();
+    }
     const isAlreadyCompleted = this.completedSections.has(pipe.id);
 
     // Na entrada da tubulação, toca apenas o som do cano (Exit 3.wav).
@@ -133,6 +152,62 @@ export class MainScene extends Phaser.Scene {
     if (countEl) {
       countEl.textContent = `${this.completedSections.size}/4`;
     }
+  }
+
+  /**
+   * Ajusta o zoom e o enquadramento vertical da câmera dinamicamente.
+   * Aplica zoom responsivo moderado no mobile para aumentar o personagem,
+   * tubulações, placas e plataformas de maneira proporcional, reduzindo o excesso de céu.
+   * No desktop, preserva rigorosamente o enquadramento original (zoom 1.0).
+   */
+  updateCameraResponsive() {
+    if (!this.cameras || !this.cameras.main) return;
+
+    const cam = this.cameras.main;
+    const worldWidth = this.worldWidth || 4800;
+    const worldHeight = this.worldHeight || 480;
+
+    // Detecta se o dispositivo é mobile / tablet ou viewport de teste mobile
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth <= 1024;
+    const isMobile = (isTouch && isSmallScreen) || window.innerWidth <= 820;
+
+    if (!isMobile) {
+      // 1. DESKTOP: Preserva zoom 1.0 e enquadramento padrão sem alterações
+      cam.setZoom(1.0);
+      cam.setFollowOffset(0, 0);
+      cam.setBounds(0, 0, worldWidth, worldHeight);
+      return;
+    }
+
+    // 2. MOBILE / TABLET:
+    const isPortrait = window.innerHeight > window.innerWidth;
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    let zoom = 1.0;
+    let offsetY = 0;
+
+    if (isPortrait) {
+      // Modo Retrato (celular em pé / telas estreitas e altas)
+      // Zoom moderado e proporcional: 1.45x (ou 1.50x em telas estreitas <= 380px)
+      zoom = screenWidth <= 380 ? 1.50 : 1.45;
+      // Offset vertical ajustado para manter o personagem e o chão bem enquadrados,
+      // cortando o excesso de céu superior e mantendo folga para os controles
+      offsetY = -28;
+    } else {
+      // Modo Paisagem (celular deitado / telas horizontais)
+      const isTablet = Math.min(screenWidth, screenHeight) >= 600;
+      // Zoom em paisagem: 1.20x para tablets, 1.32x para smartphones
+      zoom = isTablet ? 1.20 : 1.32;
+      // Offset vertical sutil em paisagem
+      offsetY = -18;
+    }
+
+    // Aplica o zoom e o offset vertical na câmera principal
+    cam.setZoom(zoom);
+    cam.setFollowOffset(0, offsetY);
+    cam.setBounds(0, 0, worldWidth, worldHeight);
   }
 
   /**
