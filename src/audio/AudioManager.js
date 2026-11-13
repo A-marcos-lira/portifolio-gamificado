@@ -120,37 +120,62 @@ export class AudioManager {
   }
 
   /**
-   * Configura desbloqueio de áudio para compatibilidade com políticas de navegadores
+   * Configura desbloqueio de áudio para compatibilidade com políticas de navegadores.
+   * Utiliza fase de captura para interceptar a primeira interação válida em qualquer elemento da página
+   * (teclas, toques na tela, cliques ou controles virtuais).
    */
   setupAutoplayUnlock() {
-    const unlock = () => {
+    const events = ['pointerdown', 'touchstart', 'touchend', 'mousedown', 'keydown', 'click'];
+
+    const unlockHandler = () => {
       this.unlockAudio();
-      ['click', 'keydown', 'touchstart'].forEach(evt => {
-        window.removeEventListener(evt, unlock);
-      });
+      if (this.isUnlocked) {
+        events.forEach(evt => {
+          window.removeEventListener(evt, unlockHandler, true);
+          document.removeEventListener(evt, unlockHandler, true);
+        });
+      }
     };
 
-    ['click', 'keydown', 'touchstart'].forEach(evt => {
-      window.addEventListener(evt, unlock, { once: true, passive: true });
+    events.forEach(evt => {
+      window.addEventListener(evt, unlockHandler, { capture: true, passive: true });
+      document.addEventListener(evt, unlockHandler, { capture: true, passive: true });
     });
   }
 
   /**
-   * Desbloqueia o contexto de áudio e inicia a música caso permitido
+   * Desbloqueia o contexto de áudio e inicia a música de fundo caso permitido
    */
   unlockAudio() {
-    this.isUnlocked = true;
-
-    // Retoma o AudioContext se estiver suspenso
+    // 1. Retoma o AudioContext do Web Audio API se estiver suspenso
     if (this.ctx && this.ctx.state === 'suspended') {
       this.ctx.resume().catch(() => {});
     }
 
-    // Inicia a música de fundo se não estiver mutada
-    if (!this.isMuted && this.bgMusic.paused) {
-      this.bgMusic.play().catch(err => {
-        console.warn('Autoplay bloqueado pelo navegador:', err);
-      });
+    // 2. Se o usuário salvou áudio mudo ou volume 0, não inicia a música
+    if (this.isMuted || this.musicVolume <= 0) {
+      this.isUnlocked = true;
+      return;
+    }
+
+    // 3. Se a música já estiver tocando, preserva a reprodução sem reiniciar
+    if (this.bgMusic && !this.bgMusic.paused) {
+      this.isUnlocked = true;
+      return;
+    }
+
+    // 4. Inicia a trilha sonora de fundo em loop
+    if (this.bgMusic && this.bgMusic.paused) {
+      const playPromise = this.bgMusic.play();
+      if (playPromise !== undefined) {
+        playPromise
+          .then(() => {
+            this.isUnlocked = true;
+          })
+          .catch(err => {
+            console.warn('Autoplay bloqueado pelo navegador, aguardando próxima interação:', err);
+          });
+      }
     }
   }
 

@@ -180,6 +180,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const jumpHolding = this.cursors.up.isDown || this.keyW.isDown || this.keySpace.isDown || this.virtualInput.jump;
     const runPressed = this.cursors.shift.isDown || this.keyShift.isDown || this.virtualInput.run;
 
+    // Desbloqueia áudio caso o jogador realize qualquer ação de movimentação
+    if (!audioManager.isUnlocked && (leftPressed || rightPressed || jumpPressed || runPressed)) {
+      audioManager.unlockAudio();
+    }
+
     // Armazena no buffer caso aperte pulo antes de tocar o chão
     if (jumpPressed) {
       this.jumpBufferingTime = time;

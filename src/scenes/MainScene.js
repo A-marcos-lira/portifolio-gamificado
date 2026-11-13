@@ -125,6 +125,16 @@ export class MainScene extends Phaser.Scene {
     // 9. CONTROLE DE ÁUDIO NO HUD
     this.audioController = new AudioController();
 
+    // 10. DESBLOQUEIO DE ÁUDIO NO TECLADO E CANVAS DO PHASER
+    if (this.input && this.input.keyboard) {
+      this.input.keyboard.on('keydown', () => {
+        audioManager.unlockAudio();
+      });
+    }
+    this.input.on('pointerdown', () => {
+      audioManager.unlockAudio();
+    });
+
     // Atualiza o indicador inicial de progresso na interface (inicia em 0/4)
     this.updateProgressUI();
   }
@@ -190,18 +200,18 @@ export class MainScene extends Phaser.Scene {
 
     if (isPortrait) {
       // Modo Retrato (celular em pé / telas estreitas e altas)
-      // Zoom moderado e proporcional: 1.45x (ou 1.50x em telas estreitas <= 380px)
-      zoom = screenWidth <= 380 ? 1.50 : 1.45;
-      // Offset vertical ajustado para manter o personagem e o chão bem enquadrados,
-      // cortando o excesso de céu superior e mantendo folga para os controles
-      offsetY = -28;
+      // Zoom refinado (+17%): 1.70x (1.76x em telas estreitas <= 380px)
+      // Aumenta o personagem e o cenário, reduzindo o excesso de céu vazio
+      zoom = screenWidth <= 380 ? 1.76 : 1.70;
+      // Offset vertical para manter o chão e o personagem bem enquadrados
+      offsetY = -32;
     } else {
       // Modo Paisagem (celular deitado / telas horizontais)
       const isTablet = Math.min(screenWidth, screenHeight) >= 600;
-      // Zoom em paisagem: 1.20x para tablets, 1.32x para smartphones
-      zoom = isTablet ? 1.20 : 1.32;
+      // Zoom em paisagem (+17%): 1.40x para tablets, 1.55x para smartphones
+      zoom = isTablet ? 1.40 : 1.55;
       // Offset vertical sutil em paisagem
-      offsetY = -18;
+      offsetY = -22;
     }
 
     // Aplica o zoom e o offset vertical na câmera principal

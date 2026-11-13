@@ -1,3 +1,5 @@
+import { audioManager } from '../audio/AudioManager.js';
+
 /**
  * Gerenciador de Controles Virtuais Touch (Mobile e Tablets)
  * Implementa mecânica de "Double Tap Run" (toque duplo para correr)
@@ -64,6 +66,9 @@ export class VirtualControls {
       try {
         element.setPointerCapture(e.pointerId);
       } catch (_) {}
+
+      // Desbloqueia e inicia o áudio na primeira interação do jogador
+      audioManager.unlockAudio();
 
       const now = performance.now();
       this.pressStartTime[dir] = now;
@@ -146,6 +151,9 @@ export class VirtualControls {
         element.setPointerCapture(e.pointerId);
       } catch (_) {}
 
+      // Desbloqueia e inicia o áudio na primeira interação do jogador
+      audioManager.unlockAudio();
+
       // Tocar em 'baixo' anula qualquer double tap horizontal pendente
       this.lastTapDir = null;
       this.player.virtualInput.down = true;
@@ -181,6 +189,9 @@ export class VirtualControls {
       try {
         element.setPointerCapture(e.pointerId);
       } catch (_) {}
+
+      // Desbloqueia e inicia o áudio na primeira interação do jogador
+      audioManager.unlockAudio();
 
       this.player.virtualInput.jump = true;
       this.player.virtualInput.justJump = true;
